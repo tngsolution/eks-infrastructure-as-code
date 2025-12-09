@@ -1,0 +1,35 @@
+# Python virtual environment
+.venv/
+venv/
+env/
+env.bak/
+venv.bak/
+
+# Python cache and build artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+
+# pip / poetry
+*.lock
+pip-log.txt
+pip-delete-this-directory.txt
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+.env
+.env.local
+**/lib
+**/bin
+**/include
+pyenv.cfg
+
