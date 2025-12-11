@@ -37,13 +37,18 @@ resource "aws_iam_role_policy_attachment" "node_ECRReadOnly" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
+resource "aws_iam_role_policy_attachment" "ssm" {
+  role       = aws_iam_role.node_group_spot.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
 resource "aws_eks_node_group" "spot" {
   cluster_name    = aws_eks_cluster.tngs_eks.name
   node_group_name = "${var.cluster_name}-spot-ng"
   node_role_arn   = aws_iam_role.node_group_spot.arn
 
-  # Use private subnets when available, otherwise public
-  subnet_ids = length(var.private_subnet_ids) > 0 ? var.private_subnet_ids : local.private_subnet_ids
+  # Use public subnets when available, otherwise public
+  subnet_ids = length(var.public_subnet_ids) > 0 ? var.public_subnet_ids : local.public_subnet_ids
 
   scaling_config {
     desired_size = var.node_group_desired_capacity
@@ -57,7 +62,7 @@ resource "aws_eks_node_group" "spot" {
   # Prefer small/cheap instance types by default (override via var.spot_instance_types)
   instance_types = var.spot_instance_types
 
-  tags = merge(local.common_tags, { "Name" = "${var.cluster_name}-spot" })
+  tags = merge(local.common_tags, var.tags, { "Name" = "${var.cluster_name}-spot" })
 
   # Optional: set update config or remote access if needed
 }

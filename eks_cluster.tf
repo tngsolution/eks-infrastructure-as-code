@@ -4,16 +4,21 @@ resource "aws_eks_cluster" "tngs_eks" {
   version  = var.kubernetes_version
 
   vpc_config {
-    subnet_ids = length(var.private_subnet_ids) > 0 ? var.private_subnet_ids : local.private_subnet_ids
-    security_group_ids = [
-      aws_security_group.eks_control_plane.id
-    ]
+    subnet_ids = length(var.public_subnet_ids) > 0 ? var.public_subnet_ids : local.public_subnet_ids
+    # security_group_ids = [
+    #   local.eks_control_plane_sg_id
+    # ]
+    public_access_cidrs     = var.eks_cp_allow_cidr
     endpoint_public_access  = true
     endpoint_private_access = true
   }
 
-  # Optionnel : tags (merge des tags locaux et des tags fournis via variables)
-  tags = length(keys(var.tags)) > 0 ? merge(local.common_tags, var.tags) : local.common_tags
+  # Active automatiquement la création de l’OIDC provider
+  enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
+
+
+  # Tags: merge local.common_tags with var.tags
+  tags = merge(local.common_tags, var.tags)
 }
 
 # IAM role pour le cluster

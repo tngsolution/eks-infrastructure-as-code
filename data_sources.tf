@@ -19,3 +19,11 @@ data "aws_subnet" "private" {
 data "aws_eks_cluster_auth" "tngs_eks" {
   name = aws_eks_cluster.tngs_eks.name
 }
+
+# data "aws_security_groups" "eks_control_plane" {
+#   filter {
+#     name   = "group-name"
+#     values = ["eks-${var.cluster_name}-cluster-sg*"]
+#   }
+# }
+

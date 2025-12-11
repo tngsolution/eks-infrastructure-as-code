@@ -9,7 +9,7 @@
 locals {
   # route table ids: prefer explicit variable, otherwise try vpc_scan_output
   _s3_route_table_ids = length(var.s3_route_table_ids) > 0 ? var.s3_route_table_ids : try(local.vpc_config.route_table_ids, [])
-  _vpc_id = var.vpc_id != "" ? var.vpc_id : try(local.vpc_config.vpc_id, null)
+  _vpc_id             = var.vpc_id != "" ? var.vpc_id : try(local.vpc_config.vpc_id, null)
 }
 
 resource "aws_ecr_repository" "app" {
@@ -20,7 +20,7 @@ resource "aws_ecr_repository" "app" {
   encryption_configuration {
     encryption_type = "AES256"
   }
-  tags = local.common_tags
+  tags = merge(local.common_tags, var.tags)
 }
 
 resource "aws_security_group" "vpce_sg" {
@@ -47,29 +47,29 @@ resource "aws_security_group" "vpce_sg" {
 }
 
 resource "aws_vpc_endpoint" "ecr_api" {
-  count             = var.create_vpc_endpoints && local._vpc_id != null ? 1 : 0
-  vpc_id            = local._vpc_id
-  service_name      = "com.amazonaws.${var.region}.ecr.api"
-  vpc_endpoint_type = "Interface"
-  subnet_ids        = local.private_subnet_ids
+  count              = var.create_vpc_endpoints && local._vpc_id != null ? 1 : 0
+  vpc_id             = local._vpc_id
+  service_name       = "com.amazonaws.${var.region}.ecr.api"
+  vpc_endpoint_type  = "Interface"
+  subnet_ids         = local.private_subnet_ids
   security_group_ids = [aws_security_group.vpce_sg[0].id]
 }
 
 resource "aws_vpc_endpoint" "ecr_dkr" {
-  count             = var.create_vpc_endpoints && local._vpc_id != null ? 1 : 0
-  vpc_id            = local._vpc_id
-  service_name      = "com.amazonaws.${var.region}.ecr.dkr"
-  vpc_endpoint_type = "Interface"
-  subnet_ids        = local.private_subnet_ids
+  count              = var.create_vpc_endpoints && local._vpc_id != null ? 1 : 0
+  vpc_id             = local._vpc_id
+  service_name       = "com.amazonaws.${var.region}.ecr.dkr"
+  vpc_endpoint_type  = "Interface"
+  subnet_ids         = local.private_subnet_ids
   security_group_ids = [aws_security_group.vpce_sg[0].id]
 }
 
 resource "aws_vpc_endpoint" "sts" {
-  count             = var.create_vpc_endpoints && local._vpc_id != null ? 1 : 0
-  vpc_id            = local._vpc_id
-  service_name      = "com.amazonaws.${var.region}.sts"
-  vpc_endpoint_type = "Interface"
-  subnet_ids        = local.private_subnet_ids
+  count              = var.create_vpc_endpoints && local._vpc_id != null ? 1 : 0
+  vpc_id             = local._vpc_id
+  service_name       = "com.amazonaws.${var.region}.sts"
+  vpc_endpoint_type  = "Interface"
+  subnet_ids         = local.private_subnet_ids
   security_group_ids = [aws_security_group.vpce_sg[0].id]
 }
 

@@ -13,7 +13,7 @@ variable "cluster_name" {
 variable "kubernetes_version" {
   description = "Kubernetes control plane version"
   type        = string
-  default     = "1.33"
+  default     = "1.34"
 }
 
 variable "vpc_id" {
@@ -67,7 +67,7 @@ variable "tags" {
 variable "cluster_managed_policy_arns" {
   description = "List of managed policy ARNs to attach to the EKS cluster role"
   type        = list(string)
-  default     = [
+  default = [
     "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
     "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController",
   ]
@@ -76,7 +76,7 @@ variable "cluster_managed_policy_arns" {
 variable "karpenter_managed_policy_arns" {
   description = "List of managed policy ARNs to attach to the Karpenter controller role"
   type        = list(string)
-  default     = [
+  default = [
     "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
     "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
   ]
@@ -120,6 +120,11 @@ variable "create_vpc_endpoints" {
 
 variable "s3_route_table_ids" {
   description = "Optional list of route table ids to attach a Gateway endpoint for S3. If empty the module will try to read route table ids from vpc_scan_output JSON."
+  type        = list(string)
+  default     = []
+}
+variable "eks_cp_allow_cidr" {
+  description = "Allow IP to access EKS control plane"
   type        = list(string)
   default     = []
 }
