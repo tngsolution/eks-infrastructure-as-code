@@ -1,0 +1,32 @@
+# Jinja2 template for VPC resource
+resource "aws_vpc" "main" {
+  cidr_block = "{{ vpc.cidr_block }}"
+  enable_dns_support   = true
+  enable_dns_hostnames = true
+  tags = merge(
+    var.global_tags,
+    {
+      Name = "tngs-fr-{{ environment }}"
+    }
+  )
+}
+
+# Jinja2 loop for subnets if defined in the context
+{% if subnets is defined %}
+{% for subnet in subnets %}
+resource "aws_subnet" "{{ subnet.name }}" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = "{{ subnet.cidr_block }}"
+  availability_zone       = "{{ subnet.az }}"
+  {% if 'public' in subnet.name %}
+  map_public_ip_on_launch = true
+  {% endif %}
+  tags = merge(
+    var.global_tags,
+    {
+      Name = "tngs-fr-{{ environment }}-{{ 'public' if subnet.map_public else 'private' }}-{{ subnet.az }}"
+    }
+  )
+}
+{% endfor %}
+{% endif %}

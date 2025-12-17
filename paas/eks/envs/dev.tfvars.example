@@ -1,0 +1,42 @@
+cluster_name = "eks-dev"
+region = "eu-west-3"
+
+# Leave subnets empty to use local vpc_scan_output parsing
+private_subnet_ids = []
+public_subnet_ids  = []
+
+# Node group sizing
+node_group_desired_capacity = 2
+node_group_min_capacity     = 1
+node_group_max_capacity     = 3
+
+# ECR and VPC endpoints
+create_ecr = true
+create_vpc_endpoints = true
+
+# Tags for billing and organization
+# Cost center: map to department or team responsible for costs
+# Cost allocation: enables AWS Cost Explorer filtering
+tags = {
+  Environment    = "DEV"
+  CostCenter     = "engineering"          # Bill to this cost center
+  Owner          = "devops-team"          # Team responsible for the resource
+  Project        = "aws-training"         # Project name for grouping
+  ManagedBy      = "terraform"            # Infrastructure as Code identifier
+  CreatedDate    = "2025-12-10"           # For cost tracking and lifecycle
+  BackupPolicy   = "daily"                # Backup retention strategy
+  LifecycleStage = "development"          # Useful for cleanup scripts
+}
+public_subnet_ids  = []
+
+# Node group sizing
+node_group_desired_capacity = 2
+node_group_min_capacity     = 1
+node_group_max_capacity     = 3
+
+# Use spot instance types configured in variables.tf (override if needed)
+# spot_instance_types = ["t3.small", "t3a.small"]
+
+# ECR and endpoints
+create_ecr = true
+create_vpc_endpoints = true

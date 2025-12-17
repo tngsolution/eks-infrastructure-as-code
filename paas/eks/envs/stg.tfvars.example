@@ -1,0 +1,28 @@
+cluster_name = "eks-stg"
+region = "eu-west-3"
+
+# In staging, provide explicit subnet IDs if available
+vpc_id = ""
+private_subnet_ids = []
+public_subnet_ids  = []
+
+# Node group sizing
+node_group_desired_capacity = 2
+node_group_min_capacity     = 1
+node_group_max_capacity     = 4
+
+create_ecr = true
+create_vpc_endpoints = true
+
+# Tags for billing and organization
+# Staging environment: higher resource allocation than dev, lower than production
+tags = {
+  Environment    = "STG"
+  CostCenter     = "operations"           # Bill to this cost center
+  Owner          = "devops-team"          # Team responsible for the resource
+  Project        = "aws-training"         # Project name for grouping
+  ManagedBy      = "terraform"            # Infrastructure as Code identifier
+  CreatedDate    = "2025-12-10"           # For cost tracking and lifecycle
+  BackupPolicy   = "daily"                # Backup retention strategy
+  LifecycleStage = "staging"              # Useful for cleanup scripts
+}

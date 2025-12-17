@@ -1,0 +1,374 @@
+environment: dev
+vpc:
+  name: tngs-fr-dev
+  cidr_block: 10.0.0.0/16
+
+tags:
+  Project: "SAA-S03"
+  Owner: "Platform"
+  ManagedBy: "Terraform"
+  CostCenter: "IT"
+  Environment: DEV
+
+subnets:
+  - name: tngs-fr-dev-public-a
+    cidr_block: 10.0.1.0/24
+    az: eu-west-3a
+    map_public: true
+  - name: tngs-fr-dev-public-b
+    cidr_block: 10.0.2.0/24
+    az: eu-west-3b
+    map_public: true
+  - name: tngs-fr-dev-public-c
+    cidr_block: 10.0.3.0/24
+    az: eu-west-3c
+    map_public: true
+  - name: tngs-fr-dev-private-a
+    cidr_block: 10.0.101.0/24
+    az: eu-west-3a
+    map_public: false
+  - name: tngs-fr-dev-private-b
+    cidr_block: 10.0.102.0/24
+    az: eu-west-3b
+    map_public: false
+  - name: tngs-fr-dev-private-c
+    cidr_block: 10.0.103.0/24
+    az: eu-west-3c
+    map_public: false
+
+routes:
+  - route_table_name: tngs-fr-dev-public-rt
+    destination_cidr_block: 0.0.0.0/0
+    type: public
+  - route_table_name: tngs-fr-dev-private-rt
+    destination_cidr_block: 0.0.0.0/0
+    type: private
+
+nacls:
+  - name: tngs-fr-dev-public
+    subnet: tngs-fr-dev-public-a
+    rules:
+      ingress:
+        - rule_number: 100
+          protocol: tcp
+          from_port: 80
+          to_port: 80
+          cidr_block: 0.0.0.0/0
+          action: allow
+        - rule_number: 110
+          protocol: tcp
+          from_port: 443
+          to_port: 443
+          cidr_block: 0.0.0.0/0
+          action: allow
+        - rule_number: 130
+          protocol: tcp
+          from_port: 22
+          to_port: 22
+          cidr_block: ALLOWED_PUBLIC_IP
+          action: allow
+        - rule_number: 140
+          protocol: "-1"
+          from_port: 0
+          to_port: 0
+          cidr_block: 0.0.0.0/0
+          action: deny
+      egress:
+        - rule_number: 100
+          protocol: tcp
+          from_port: 443
+          to_port: 443
+          cidr_block: 0.0.0.0/0
+          action: allow
+        - rule_number: 110
+          protocol: tcp
+          from_port: 80
+          to_port: 80
+          cidr_block: 0.0.0.0/0
+          action: allow
+        - rule_number: 120
+          protocol: tcp
+          from_port: 1024
+          to_port: 65535
+          cidr_block: 0.0.0.0/0
+          action: allow
+        - rule_number: 130
+          protocol: tcp
+          from_port: 22
+          to_port: 22
+          cidr_block: 10.0.128.0/20
+          action: allow
+        - rule_number: 140
+          protocol: tcp
+          from_port: 22
+          to_port: 22
+          cidr_block: 10.0.144.0/20
+          action: allow
+        - rule_number: 150
+          protocol: tcp
+          from_port: 22
+          to_port: 22
+          cidr_block: 10.0.160.0/20
+          action: allow
+        - rule_number: 160
+          protocol: "-1"
+          from_port: 0
+          to_port: 0
+          cidr_block: 0.0.0.0/0
+          action: deny
+  - name: tngs-fr-dev-private-nacl
+    subnet: tngs-fr-dev-private-a
+    rules:
+      ingress:
+        - rule_number: 100
+          protocol: "6"       # TCP
+          from_port: 80
+          to_port: 80
+          cidr_block: 10.0.1.0/24
+          action: "allow"
+        - rule_number: 110
+          protocol: "6"
+          from_port: 80
+          to_port: 80
+          cidr_block: 10.0.2.0/24
+          action: "allow"
+        - rule_number: 120
+          protocol: "6"
+          from_port: 80
+          to_port: 80
+          cidr_block: 10.0.3.0/24
+          action: "allow"
+        - rule_number: 130
+          protocol: "6"
+          from_port: 443
+          to_port: 443
+          cidr_block: 10.0.1.0/24
+          action: "allow"
+        - rule_number: 140
+          protocol: "6"
+          from_port: 443
+          to_port: 443
+          cidr_block: 10.0.2.0/24
+          action: "allow"
+        - rule_number: 150
+          protocol: "6"
+          from_port: 443
+          to_port: 443
+          cidr_block: 10.0.3.0/24
+          action: "allow"
+        - rule_number: 160
+          protocol: "6"
+          from_port: 3306
+          to_port: 3306
+          cidr_block: 10.0.1.0/24
+          action: "allow"
+        - rule_number: 170
+          protocol: "6"
+          from_port: 3306
+          to_port: 3306
+          cidr_block: 10.0.2.0/24
+          action: "allow"
+        - rule_number: 180
+          protocol: "6"
+          from_port: 3306
+          to_port: 3306
+          cidr_block: 10.0.3.0/24
+          action: "allow"
+        - rule_number: 190
+          protocol: "6"
+          from_port: 1024
+          to_port: 65535
+          cidr_block: 10.0.1.0/24
+          action: "allow"
+        - rule_number: 200
+          protocol: "6"
+          from_port: 1024
+          to_port: 65535
+          cidr_block: 10.0.2.0/24
+          action: "allow"
+        - rule_number: 210
+          protocol: "6"
+          from_port: 1024
+          to_port: 65535
+          cidr_block: 10.0.3.0/24
+          action: "allow"
+        - rule_number: 220
+          protocol: "6"
+          from_port: 22
+          to_port: 22
+          cidr_block: 10.0.1.0/24
+          action: "allow"
+        - rule_number: 230
+          protocol: "6"
+          from_port: 22
+          to_port: 22
+          cidr_block: 10.0.2.0/24
+          action: "allow"
+        - rule_number: 240
+          protocol: "6"
+          from_port: 22
+          to_port: 22
+          cidr_block: 10.0.3.0/24
+          action: "allow"
+        - rule_number: 250
+          protocol: "6"
+          from_port: 10250
+          to_port: 10250
+          cidr_block: "10.0.0.0/16"
+          action: "allow"
+        - rule_number: 260
+          protocol: "6"
+          from_port: 443
+          to_port: 443
+          cidr_block: "0.0.0.0/0"
+          action: "allow"
+        - rule_number: 270
+          protocol: "6"
+          from_port: 1024
+          to_port: 65535
+          cidr_block: "0.0.0.0/0"
+          action: "allow"
+        - rule_number: 300
+          protocol: "-1"
+          from_port: 0
+          to_port: 0
+          cidr_block: "0.0.0.0/0"
+          action: "deny"
+      egress:
+        - rule_number: 100
+          protocol: "6"
+          from_port: 80
+          to_port: 80
+          cidr_block: 10.0.1.0/24
+          action: "allow"
+        - rule_number: 110
+          protocol: "6"
+          from_port: 80
+          to_port: 80
+          cidr_block: 10.0.2.0/24
+          action: "allow"
+        - rule_number: 120
+          protocol: "6"
+          from_port: 80
+          to_port: 80
+          cidr_block: 10.0.3.0/24
+          action: "allow"
+        - rule_number: 130
+          protocol: "6"
+          from_port: 1024
+          to_port: 65535
+          cidr_block: "0.0.0.0/0"
+          action: "allow"
+        - rule_number: 140
+          protocol: "6"
+          from_port: 443
+          to_port: 443
+          cidr_block: 10.0.1.0/24
+          action: "allow"
+        - rule_number: 150
+          protocol: "6"
+          from_port: 443
+          to_port: 443
+          cidr_block: 10.0.2.0/24
+          action: "allow"
+        - rule_number: 160
+          protocol: "6"
+          from_port: 443
+          to_port: 443
+          cidr_block: 10.0.3.0/24
+          action: "allow"
+        - rule_number: 180
+          protocol: "6"
+          from_port: 22
+          to_port: 22
+          cidr_block: 10.0.1.0/24
+          action: "allow"
+        - rule_number: 190
+          protocol: "6"
+          from_port: 22
+          to_port: 22
+          cidr_block: 10.0.2.0/24
+          action: "allow"
+        - rule_number: 200
+          protocol: "6"
+          from_port: 22
+          to_port: 22
+          cidr_block: 10.0.3.0/24
+          action: "allow"
+        - rule_number: 210
+          protocol: "6"
+          from_port: 10250
+          to_port: 10250
+          cidr_block: "10.0.0.0/16"
+          action: "allow"
+        - rule_number: 220
+          protocol: "6"
+          from_port: 443
+          to_port: 443
+          cidr_block: "0.0.0.0/0"
+          action: "allow"
+        - rule_number: 230
+          protocol: "6"
+          from_port: 1024
+          to_port: 65535
+          cidr_block: "0.0.0.0/0"
+          action: "allow"
+        - rule_number: 300
+          protocol: "-1"
+          from_port: 0
+          to_port: 0
+          cidr_block: "0.0.0.0/0"
+          action: "deny"
+
+security_groups:
+  - name: tngs-fr-dev-public-sg
+    description: Public access (ALB / Bastion)
+    vpc: tngs-fr-dev
+    ingress:
+      - protocol: tcp
+        from_port: 80
+        to_port: 80
+        cidr_blocks:
+          - 0.0.0.0/0
+      - protocol: tcp
+        from_port: 443
+        to_port: 443
+        cidr_blocks:
+          - 0.0.0.0/0
+      - protocol: tcp
+        from_port: 22
+        to_port: 22
+        cidr_blocks:
+          - ALLOWED_PUBLIC_IP
+    egress:
+      - protocol: "-1"
+        from_port: 0
+        to_port: 0
+        cidr_blocks:
+          - 0.0.0.0/0
+
+  - name: tngs-fr-dev-private-sg
+    description: Private workloads (EKS nodes / EC2)
+    vpc: tngs-fr-dev
+    ingress:
+      - protocol: tcp
+        from_port: 80
+        to_port: 80
+        source_security_groups:
+          - tngs-fr-dev-public-sg
+      - protocol: tcp
+        from_port: 443
+        to_port: 443
+        source_security_groups:
+          - tngs-fr-dev-public-sg
+      - protocol: tcp
+        from_port: 22
+        to_port: 22
+        cidr_blocks:
+          - 10.0.0.0/16
+    egress:
+      - protocol: "-1"
+        from_port: 0
+        to_port: 0
+        cidr_blocks:
+          - 0.0.0.0/0

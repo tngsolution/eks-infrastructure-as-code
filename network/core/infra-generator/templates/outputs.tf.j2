@@ -1,0 +1,59 @@
+# Jinja2 template for Terraform outputs
+output "vpc_id" {
+  description = "The ID of the VPC"
+  value       = aws_vpc.main.id
+}
+
+# Outputs for subnets
+{% if subnets is defined %}
+{% for subnet in subnets %}
+output "{{ subnet.name }}_id" {
+  description = "Subnet ID for {{ subnet.name }}"
+  value       = aws_subnet.{{ subnet.name }}.id
+}
+{% endfor %}
+{% endif %}
+
+# Outputs for route tables
+{% if routes is defined %}
+{% for route in routes %}
+output "{{ route.route_table_name }}_id" {
+  value = aws_route_table.{{ route.route_table_name }}.id
+}
+{% endfor %}
+{% endif %}
+
+# Output for Internet Gateway
+{% if vpc is defined %}
+output "{{ vpc.name }}-igw_id" {
+  value = aws_internet_gateway.igw.id
+}
+{% endif %}
+
+# Output for NAT Gateway (first public subnet)
+{% if subnets is defined %}
+{% set public_subnet = subnets | selectattr('map_public', 'equalto', true) | list | first %}
+{% if public_subnet %}
+output "{{ public_subnet.name }}-nat_id" {
+  value = aws_nat_gateway.nat.id
+}
+{% endif %}
+{% endif %}
+
+# Outputs for NACLs
+{% if nacls is defined %}
+{% for nacl in nacls %}
+output "{{ nacl.name }}_id" {
+  value = aws_network_acl.{{ nacl.name }}.id
+}
+{% endfor %}
+{% endif %}
+
+# Outputs for Security Groups
+{% if security_groups is defined %}
+{% for sg in security_groups %}
+output "{{ sg.name }}_id" {
+  value = aws_security_group.{{ sg.name | replace('-', '_') }}.id
+}
+{% endfor %}
+{% endif %}

@@ -1,0 +1,24 @@
+# Jinja2 template for Terraform variables
+variable "vpc_cidr_block" {
+  description = "CIDR block for the VPC"
+  type        = string
+  default     = "{{ vpc.cidr_block }}"
+}
+
+# Global tags variable
+variable "global_tags" {
+  type = map(string)
+  default = {
+    {% if tags is defined %}
+      {% for key, value in tags.items() %}
+    {{ key }} = "{{ value }}"
+      {% endfor %}
+    {% endif %}
+  }
+}
+
+variable "aws_region" {
+  description = "AWS region"
+  type        = string
+  default     = "eu-west-3"
+}
