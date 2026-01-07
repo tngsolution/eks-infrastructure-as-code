@@ -1,0 +1,84 @@
+# ------------------------------------------------------------------------------
+# Bastion Terraform Module Variables
+#
+# This file defines all input variables for the Bastion stack.
+# All descriptions are in English.
+# ------------------------------------------------------------------------------
+
+variable "vpc_name" {
+  description = "Name of the VPC to use for the Bastion stack."
+  type        = string
+  default     = "{{ vpc_name }}"
+}
+
+variable "prefix" {
+  description = "Prefix used for all Bastion resource names."
+  type        = string
+  default     = "bastion"
+}
+
+variable "aws_region" {
+  description = "AWS region where Bastion resources will be deployed."
+  type        = string
+  default     = "{{ aws_region }}"
+}
+
+variable "instance_type" {
+  description = "EC2 instance type for the Bastion host (e.g., t3.micro)."
+  type        = string
+  default     = {{ instance_type | tojson }}
+}
+
+variable "key_name" {
+  description = "Name of the SSH key pair to use for Bastion EC2 access."
+  type        = string
+  default     = {{ key_name | tojson }}
+}
+
+variable "user_data" {
+  description = "Cloud-init user data script for Bastion EC2 (YAML, loaded via templatefile)."
+  type        = string
+  default     = {{ user_data | tojson }}
+}
+
+variable "allowed_cidrs" {
+  description = "List of CIDR blocks allowed to SSH into the Bastion host."
+  type        = list(string)
+  default     = {{ allowed_cidrs | tojson }}
+}
+
+variable "asg_min" {
+  description = "Minimum number of Bastion instances in the Auto Scaling Group."
+  type        = number
+  default     = {{ asg_min }}
+}
+
+variable "asg_max" {
+  description = "Maximum number of Bastion instances in the Auto Scaling Group."
+  type        = number
+  default     = {{ asg_max }}
+}
+
+variable "asg_desired" {
+  description = "Desired number of Bastion instances in the Auto Scaling Group."
+  type        = number
+  default     = {{ asg_desired }}
+}
+
+variable "global_tags" {
+  description = "Map of global tags to apply to all Bastion resources."
+  type        = map(string)
+  default = {
+    {% if tags is defined %}
+      {% for key, value in tags.items() %}
+    {{ key }} = "{{ value }}"
+      {% endfor %}
+    {% endif %}
+  }
+}
+
+variable "terraform_version" {
+  description = "Terraform version to inject into the cloud-init script (for installation or audit)."
+  type        = string
+  default     = "1.8.0"
+}

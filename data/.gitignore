@@ -1,0 +1,2 @@
+# Ignore network scan data (contains sensitive infra info)
+/network/

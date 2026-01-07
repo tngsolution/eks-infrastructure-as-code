@@ -1,0 +1,26 @@
+# Terraform local state and cache
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.backup
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*.tfvars
+terraform.tfvars
+terraform.tfvars.*
+
+# Local Terraform CLI configuration
+.terraformrc
+terraform.rc
+
+# Ignore the scanned VPC output (sensitive / local)
+vpc_scan_output/
+
+# Editor/temp files
+.vscode/
+# macOS
+.DS_Store
+**/data/
+**/infra-generator/data

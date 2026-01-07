@@ -1,0 +1,4 @@
+# Ignore generated Terraform files and folders
+/generated/
+**/data/
+**/infra-generator/data

@@ -1,0 +1,16 @@
+locals {
+  scan = jsondecode(file("${path.root}/../../data/network/${var.vpc_name}.json"))
+  public_subnet_ids  = [for s in local.scan.subnets : s.subnet_id if strcontains(lower(s.tags.Name), "public")]
+  private_subnet_ids = [for s in local.scan.subnets : s.subnet_id if strcontains(lower(s.tags.Name), "private")]
+  security_group_ids = [for sg in local.scan.security_groups : sg.group_id]
+  vpc_id = local.scan.vpc_id
+# Use existing NSG from scan JSON (first security_group_id)
+  bastion_sg_id = length(local.security_group_ids) > 0 ? local.security_group_ids[0] : null
+  # First security group whose name contains "public"
+  public_bastion_sg_id = (
+    length([for sg in local.scan.security_groups : sg.group_id if strcontains(lower(sg.group_name), "public")]) > 0
+    ? [for sg in local.scan.security_groups : sg.group_id if strcontains(lower(sg.group_name), "public")][0]
+    : null
+  )
+}
+

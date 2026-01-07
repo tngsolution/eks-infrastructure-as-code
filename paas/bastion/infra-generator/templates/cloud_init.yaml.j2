@@ -1,0 +1,69 @@
+#cloud-config
+
+hostname: tngs-bastion
+
+package_update: true
+package_upgrade: true
+
+packages:
+  - git
+  - curl
+  - wget
+  - jq
+  - unzip
+  - htop
+  - bash-completion
+  - nc
+  - telnet
+  - tcpdump
+  - traceroute
+  - bind-utils
+  - amazon-ssm-agent
+  - openssh-server
+
+users:
+  - default
+  - name: ec2-user
+    sudo: ["ALL=(ALL) NOPASSWD:ALL"]
+    shell: /bin/bash
+
+write_files:
+  - path: /etc/profile.d/bastion.sh
+    permissions: "0644"
+    content: |
+      export AWS_REGION=${region}
+      export ENV=${env}
+      alias k=kubectl
+      alias tf=terraform
+
+runcmd:
+  # SSM
+  - systemctl enable amazon-ssm-agent
+  - systemctl start amazon-ssm-agent
+  - systemctl enable sshd
+  - systemctl start sshd
+
+  # kubectl
+  - curl -Lo /usr/local/bin/kubectl https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl
+  - chmod +x /usr/local/bin/kubectl
+
+  # helm
+  - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+  # eksctl
+  - curl -Lo /tmp/eksctl.tar.gz https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_Linux_amd64.tar.gz
+  - tar -xzf /tmp/eksctl.tar.gz -C /usr/local/bin
+  - chmod +x /usr/local/bin/eksctl
+
+  # terraform
+  - |
+    TERRAFORM_VERSION=1.6.6
+    curl -Lo /tmp/terraform.zip https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+    unzip /tmp/terraform.zip -d /usr/local/bin
+    chmod +x /usr/local/bin/terraform
+
+  # bash completion
+  - kubectl completion bash > /etc/bash_completion.d/kubectl
+  - terraform -install-autocomplete || true
+
+  - echo "Bastion ready" > /var/log/bastion-init.log

@@ -1,0 +1,23 @@
+environment: dev
+aws_region: eu-west-3
+name_prefix: tngs-fr-dev-bstn
+vpc_name: tngs-fr-dev
+
+tags:
+  Project: "SAA-S03"
+  Owner: "Platform"
+  ManagedBy: "Terraform"
+  CostCenter: "IT"
+  Environment: DEV
+  Company: "TNGS"
+
+
+ami_id: ami-xxxxxxxx
+instance_type: t3.micro
+key_name: tngs-fr-admin
+user_data: cloud_init_bastion.yaml
+allowed_cidrs:
+  - 0.0.0.0/0
+asg_min: 1
+asg_max: 2
+asg_desired: 1
