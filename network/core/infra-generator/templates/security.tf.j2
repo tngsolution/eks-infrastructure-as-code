@@ -2,7 +2,10 @@
 # Network ACL for {{ nacl.name }}
 resource "aws_network_acl" "{{ nacl.name }}" {
   vpc_id = aws_vpc.main.id
-  tags   = merge(var.global_tags, { Name = "{{ nacl.name }}" })
+  tags = merge(
+    var.global_tags,
+    { Name = lookup(var.global_tags, "Name", "{{ nacl.name }}") }
+  )
 }
 
 # Ingress rules

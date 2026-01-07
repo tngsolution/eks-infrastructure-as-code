@@ -11,6 +11,7 @@ resource "aws_internet_gateway" "igw" {
   )
 }
 
+{% if nat_gateway is not defined or nat_gateway %}
 # Elastic IP for NAT Gateway
 resource "aws_eip" "nat" {
   domain = "vpc"
@@ -31,4 +32,5 @@ resource "aws_nat_gateway" "nat" {
     { Name = "{{ public_subnet.name }}-nat" }
   )
 }
+{% endif %}
 {% endif %}

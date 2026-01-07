@@ -20,10 +20,14 @@ resource "aws_route_table" "{{ route.route_table_name }}" {
   {% for route in routes if route.type == 'private' %}
 resource "aws_route_table" "{{ route.route_table_name }}" {
   vpc_id = aws_vpc.main.id
+  {% if nat_gateway is defined and nat_gateway %}
   route {
     cidr_block = "{{ route.destination_cidr_block }}"
     nat_gateway_id = aws_nat_gateway.nat.id
   }
+  {% else %}
+  # Pas de route 0.0.0.0/0 générée car nat_gateway absent ou false
+  {% endif %}
   tags = merge(
     var.global_tags,
     {

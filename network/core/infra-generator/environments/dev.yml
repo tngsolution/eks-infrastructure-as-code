@@ -9,6 +9,7 @@ tags:
   ManagedBy: "Terraform"
   CostCenter: "IT"
   Environment: DEV
+  Company: "TNGS"
 
 subnets:
   - name: tngs-fr-dev-public-a
@@ -372,3 +373,18 @@ security_groups:
         to_port: 0
         cidr_blocks:
           - 0.0.0.0/0
+
+endpoints:
+  s3: true
+  dynamodb: true
+  ssm: true
+  ecr_api: true
+  ecr_dkr: true
+  kms: true
+  sqs: true
+  eventbridge: true
+  sns: true
+  secretsmanager: true
+  efs: false
+
+nat_gateway: false

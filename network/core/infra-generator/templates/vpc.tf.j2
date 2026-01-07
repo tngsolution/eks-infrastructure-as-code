@@ -6,7 +6,7 @@ resource "aws_vpc" "main" {
   tags = merge(
     var.global_tags,
     {
-      Name = "tngs-fr-{{ environment }}"
+      Name = "{{ vpc.name }}"
     }
   )
 }
@@ -30,3 +30,4 @@ resource "aws_subnet" "{{ subnet.name }}" {
 }
 {% endfor %}
 {% endif %}
+

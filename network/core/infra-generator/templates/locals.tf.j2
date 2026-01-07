@@ -1,0 +1,21 @@
+# Local for private subnet IDs
+{% if subnets is defined %}
+locals {
+  private_subnet_ids = [
+    {% for subnet in subnets if not subnet.map_public -%}
+      aws_subnet.{{ subnet.name }}.id{% if not loop.last %},{% endif %}
+    {%- endfor %}
+  ]
+}
+{% endif %}
+
+# Local for private route table IDs (for Gateway endpoints)
+{% if routes is defined %}
+locals {
+  private_route_table_ids = [
+    {% for route in routes if not route.map_public -%}
+      aws_route_table.{{ route.route_table_name }}.id{% if not loop.last %},{% endif %}
+    {%- endfor %}
+  ]
+}
+{% endif %}
